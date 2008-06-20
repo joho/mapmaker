@@ -1,7 +1,7 @@
 sitemap 'http://whoisjohnbarton.com' do
   url_set :ninjas do |set|
     %w(heuy dewy louis).each do |duck_name|
-      set.page '/ninja_ducks/#{duck_name}', :updated_at => Time.now.at_midnight, :priority => 0.3, :change_frequency => :monthly
+      set.page "/ninja_ducks/#{duck_name}", :updated_at => Time.now.at_midnight, :priority => 0.3, :change_frequency => :monthly
     end
   end
   

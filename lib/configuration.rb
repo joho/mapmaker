@@ -41,8 +41,6 @@ module Mapmaker
   end
   
   class ConfigurationManager
-    @@configurations = {}
-    
     def self.config(file_name = nil)
       @@configuration if defined? @@configuration and @@configuration 
       
@@ -54,15 +52,7 @@ module Mapmaker
       @@configuration
     end
     
-  private
-    def self.sitemap(hostname, &block)
-      @@configuration = Configuration.new(hostname, block)
-    end
-    
-    def self.url_set(key, &block)
-      @@configuration.add_url_set(key, block)
-    end
-    
+  private    
     def self.read_config_file(file_name)
       File.open(file_name) { |f| f.read }
     end 
