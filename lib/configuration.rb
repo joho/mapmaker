@@ -43,13 +43,10 @@ module Mapmaker
   class ConfigurationManager
     @@configurations = {}
     
-    def self.config
+    def self.config(file_name = RAILS_ROOT + '/config/sitemap.rb')
       @@configurations unless @@configurations.empty?
       
-      config_code = nil
-      File.open(RAILS_ROOT + '/config/sitemap.rb') do |f|
-        config_code = f.read
-      end
+      config_code = read_config_file(file_name)
       
       instance_eval config_code
     end
@@ -57,6 +54,14 @@ module Mapmaker
   private
     def self.sitemap(key, hostname, &block)
       @@configurations[key] = Configuration.new(hostname, block)
+    end
+    
+    def self.read_config_file(file_name)
+      config_code = nil
+      File.open(file_name) do |f|
+        config_code = f.read
+      end
+      config_code
     end 
   end
   
