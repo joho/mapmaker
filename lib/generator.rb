@@ -1,8 +1,8 @@
 module Mapmaker
   class Generator
-    def self.create_sitemap_index(key)
-      sitemap_keys = Mapmaker::Configuration.instance.keys
-      hostname = Mapmaker::Configuration.instance.hostname
+    def self.create_sitemap_index
+      sitemap_keys = Mapmaker::ConfigurationManager.config
+      hostname = Mapmaker::ConfigurationManager.config.hostname
 
       xml = Builder::XmlMarkup.new :indent => 2
       xml.instruct!
@@ -21,7 +21,7 @@ module Mapmaker
     end
 
     def self.create_sitemap(url_name)
-      pages = Mapmaker::Configuration.instance[url_name.to_sym]
+      pages = Mapmaker::Configuration.config[url_name.to_sym]
       
       raise "Exceeded 50,000 URL limit in sitemap '#{url_name}.xml' (returned #{pages.size})" if pages.size > 50_000
       

@@ -1,4 +1,5 @@
 require File.dirname(__FILE__) + '/../init.rb'
+require 'hpricot'
 
 class PirateController
   def index
@@ -12,20 +13,21 @@ class PirateController
 end
 
 describe Mapmaker, "generating sitemaps from config at the bottom of the spec" do
-  it "generate an index that points to the ninjas and from_controller sitemaps"
-  it "should generate a ninjas sitemap with 4 crappy duck name urls etc"
-  it "should generate a from_controller sitemap that derives all the urls from the public methods"
-end
-
-__END__
-sitemap 'http://whoisjohnbarton.com' do
-  urlset :ninjas do |set|
-    %w(heuy dewy louis).each do |duck_name|
-      set.page '/ninja_ducks/#{duck_name}', :updated_at => Time.now.at_midnight, :priority => 0.3, :change_frequency => :monthly
-    end
+  before :each do
+    Mapmaker::ConfigurationManager.config(File.dirname(__FILE__) + '/config/sitemap.rb')
   end
   
-  urlset :from_controller do |set|
-    set.reflect_off_controller PirateController, "/pirate_monkeys/%s", :change_frequency => :always, :priority => 0.8
+  it "generate an index that points to the ninjas and from_controller sitemaps" do
+    index = Mapmaker::Generator.create_sitemap_index
+  end
+  
+  it "should generate a ninjas sitemap with 4 crappy duck name urls etc" do
+    ninjas = Mapmaker::Generator.create_sitemap(:ninjas)
+    ninjas.should_not == nil
+  end
+  
+  it "should generate a from_controller sitemap that derives all the urls from the public methods" do
+    pirates = Mapmaker::Generator.create_sitemap(:from_controller)
+    pirates.should_not == nil 
   end
 end

@@ -43,35 +43,36 @@ module Mapmaker
   class ConfigurationManager
     @@configurations = {}
     
-    def self.config(file_name = RAILS_ROOT + '/config/sitemap.rb')
-      @@configurations unless @@configurations.empty?
+    def self.config(file_name = nil)
+      @@configuration if defined? @@configuration and @@configuration 
       
+      file_name ||= RAILS_ROOT + '/config/sitemap.rb'
       config_code = read_config_file(file_name)
       
-      instance_eval config_code
+      @@configuration = Configuration.new
+      @@configuration.send :instance_eval, config_code
+      @@configuration
     end
     
   private
-    def self.sitemap(key, hostname, &block)
-      @@configurations[key] = Configuration.new(hostname, block)
+    def self.sitemap(hostname, &block)
+      @@configuration = Configuration.new(hostname, block)
+    end
+    
+    def self.url_set(key, &block)
+      @@configuration.add_url_set(key, block)
     end
     
     def self.read_config_file(file_name)
-      config_code = nil
-      File.open(file_name) do |f|
-        config_code = f.read
-      end
-      config_code
+      File.open(file_name) { |f| f.read }
     end 
   end
   
   class Configuration
     attr_reader :hostname
 
-    def initialize(hostname, &block)
-      @hostname = hostname
+    def initialize
       @urlsets = {}
-      block.call
     end
     
     def [](key)
@@ -83,6 +84,11 @@ module Mapmaker
     end
     
   private
+    def sitemap(hostname)
+      @hostname = hostname
+      yield
+    end
+    
     def url_set(name, &block)
       @urlsets[name] = UrlSet.new(@hostname, block)
     end
