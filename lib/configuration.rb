@@ -73,6 +73,10 @@ module Mapmaker
       @urlsets.keys
     end
     
+    def only_one_url_set?
+      @urlsets.size == 1
+    end
+    
   private
     def sitemap(hostname)
       @hostname = hostname

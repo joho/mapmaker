@@ -6,7 +6,7 @@ module Mapmaker
       config = Mapmaker::ConfigurationManager.config
       
       # if there is only one url set create the sitemap for that
-      return create_sitemap(config.keys[0]) if config.size == 1
+      return create_sitemap(config.keys[0]) if config.only_one_url_set?
       
       hostname = config.hostname
 
