@@ -3,7 +3,7 @@ class MapmakerGenerator < Rails::Generator::Base
     record do |m|
       m.directory 'controllers'
 
-      m.template 'mapmaker_controller.rb', 'controllers/mapmaker_controller.rb'
+      m.template 'mapmaker_controller.rb', 'app/controllers/mapmaker_controller.rb'
       m.template 'sitemap.rb', 'config/sitemap.rb'
     end
   end

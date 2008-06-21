@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../init.rb'
+Dir.glob(File.dirname(__FILE__) + '/../lib/*.rb').each {|rb| require rb}
 require 'hpricot'
 require 'action_controller'
 require 'active_support'

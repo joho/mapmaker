@@ -3,4 +3,11 @@ Mapmaker
 
 Plugin for creating google sitemaps.
 
-Will document more soon I promise
+to get this going
+
+ script/generate mapmaker
+
+the add these lines to your routes.rb
+
+ map.connect 'sitemap.xml', :controller => 'mapmaker', :action => 'index'
+ map.connect 'sitemaps/:url_name.xml', :controller => 'mapmaker', :action => 'show'
