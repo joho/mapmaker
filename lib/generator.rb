@@ -4,6 +4,10 @@ module Mapmaker
   class Generator
     def self.create_sitemap_index
       config = Mapmaker::ConfigurationManager.config
+      
+      # if there is only one url set create the sitemap for that
+      return create_sitemap(config.keys[0]) if config.size == 1
+      
       hostname = config.hostname
 
       xml = Builder::XmlMarkup.new :indent => 2
