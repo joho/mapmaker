@@ -1,10 +1,10 @@
-class MapmakerControllerGenerator < Rails::Generator::Base
+class MapmakerGenerator < Rails::Generator::Base
   def manifest
     record do |m|
       m.directory 'controllers'
-      
-      m.class_collisions class_path, "MapmakerController"
+
       m.template 'mapmaker_controller.rb', 'controllers/mapmaker_controller.rb'
+      m.template 'sitemap.rb', 'config/sitemap.rb'
     end
   end
   
