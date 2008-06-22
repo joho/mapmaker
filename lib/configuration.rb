@@ -12,7 +12,7 @@ module Mapmaker
     def initialize(hostname, proc)
       @hostname = hostname
       @page_store = []
-      @proc = proc
+      create_load_pages_method proc
     end
     
     def page(url, options = {})
@@ -35,8 +35,15 @@ module Mapmaker
     end
     
     def pages
-      @proc.call(self) if @page_store.empty?
+      send :load_pages if @page_store.empty?
       @page_store
+    end
+  private
+    def create_load_pages_method(block)
+      klass = class << self; self; end
+      klass.instance_eval do
+        define_method :load_pages, block
+      end
     end
   end
   
@@ -66,7 +73,7 @@ module Mapmaker
     end
     
     def [](key)
-      @urlsets[key] ? @urlsets[key].pages : []
+      @urlsets[key].pages
     end
     
     def keys
