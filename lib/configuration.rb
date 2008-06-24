@@ -48,27 +48,45 @@ module Mapmaker
   end
   
   class ConfigurationManager
-    def self.config(file_name = nil)
-      @@configuration if defined? @@configuration and @@configuration 
+    DEFAULT_KEY = :default
+    @@configurations = {}
+
+    def self.config
+      @@configurations unless @@configurations.empty?
       
-      file_name ||= RAILS_ROOT + '/config/sitemap.rb'
-      config_code = read_config_file(file_name)
+      file_name = RAILS_ROOT + '/config/sitemap.rb'
+      instance_eval read_config_file(file_name)
       
-      @@configuration = Configuration.new
-      @@configuration.send :instance_eval, config_code
-      @@configuration
+      @@configurations
     end
     
   private    
     def self.read_config_file(file_name)
       File.open(file_name) { |f| f.read }
+    end
+    
+    def self.sitemap(*args)
+      unless args.size == 1 or args.size == 2
+        raise "Must specify either the hostname or a key/hostname combo in the case of multiple sitemaps"
+      end
+      
+      key = args.size > 1 ? args.shift : DEFAULT_KEY
+      
+      @@current_config = @@configurations[key] = Configuration.new(args.shift)
+      yield
+      @@current_config = nil
+    end
+    
+    def self.url_set(name, &block)
+      @@current_config.send :add_url_set, name, block
     end 
   end
   
   class Configuration
     attr_reader :hostname
 
-    def initialize
+    def initialize(hostname)
+      @hostname = hostname
       @urlsets = {}
     end
     
@@ -83,14 +101,9 @@ module Mapmaker
     def only_one_url_set?
       @urlsets.size == 1
     end
-    
-  private
-    def sitemap(hostname)
-      @hostname = hostname
-      yield
-    end
-    
-    def url_set(name, &block)
+
+  private  
+    def add_url_set(name, block)
       @urlsets[name] = UrlSet.new(@hostname, block)
     end
   end # end config

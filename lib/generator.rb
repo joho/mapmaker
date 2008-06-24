@@ -2,9 +2,10 @@ require 'builder'
 
 module Mapmaker
   class Generator
-    def self.create_sitemap_index
-      config = Mapmaker::ConfigurationManager.config
-      
+    def self.create_sitemap_index(sitemap_key = nil)
+      sitemap_key ||= ConfigurationManager::DEFAULT_KEY
+      config = ConfigurationManager.config[sitemap_key]
+
       # if there is only one url set create the sitemap for that
       return create_sitemap(config.keys[0]) if config.only_one_url_set?
       
@@ -26,8 +27,11 @@ module Mapmaker
       xml.target!
     end
 
-    def self.create_sitemap(url_name)
-      pages = Mapmaker::ConfigurationManager.config[url_name.to_sym]
+    def self.create_sitemap(*args)
+      site_key = args.size > 1 ? args.shift : ConfigurationManager::DEFAULT_KEY
+      url_name = args.shift.to_sym
+      
+      pages = ConfigurationManager.config[site_key][url_name]
       
       raise "Exceeded 50,000 URL limit in sitemap '#{url_name}.xml' (returned #{pages.size})" if pages.size > 50_000
       
