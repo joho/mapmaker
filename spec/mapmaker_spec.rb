@@ -3,23 +3,7 @@ require 'hpricot'
 require 'action_controller'
 require 'active_support'
 Dir.glob(File.dirname(__FILE__) + '/../lib/*.rb').each {|rb| require rb}
-
-# create some fake controllers
-class ApplicationController < ActionController::Base
-  def some_shitty_method
-  end
-end
-
-class PirateController < ApplicationController
-  def index
-  end
-  
-  def yo_ho_ho
-  end
-  
-  def and_a_bottle_o_rum
-  end
-end
+require File.dirname(__FILE__) + '/../example/controllers'
 
 module MapmakerSpecHelper
   def check_all_urls_exist(xml, urls)
@@ -47,13 +31,11 @@ describe Mapmaker, "generating sitemaps from example config" do
   
     it "should generate a ninjas sitemap with 4 crappy duck name urls etc" do
       ninjas = Mapmaker::Generator.create_sitemap(:main, :ninjas)
-      
       check_all_urls_exist(ninjas, %w(heuy dewy louis))
     end
     
     it "should generate a from_controller sitemap that derives all the urls from the public methods" do
       pirates = Mapmaker::Generator.create_sitemap(:main, :from_controller)
-
       check_all_urls_exist(pirates, %w(index yo_ho_ho and_a_bottle_o_rum))
     end
   end
@@ -61,7 +43,6 @@ describe Mapmaker, "generating sitemaps from example config" do
   describe "in the default sitemap" do
     it "should generate an index with all the urls in it" do
       index = Mapmaker::Generator.create_sitemap_index
-
       check_all_urls_exist(index, %(donatello leonardo raphael michaelangelo))
     end
   end
