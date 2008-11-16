@@ -52,6 +52,9 @@ describe Mapmaker, "generating sitemaps from example config" do
     before :all do
       task :environment do
         # this is a dummy task that doesn't do anything
+        # so rake will shut the hell up while running from rspec
+        # rather than from in rails
+        ENV['SITEMAP'] = 'main'
       end
   
       load('lib/tasks/mapmaker.rake')
@@ -59,7 +62,8 @@ describe Mapmaker, "generating sitemaps from example config" do
       @task = Rake::Task['generate_sitemaps']
     end
     
-    before :each do
+    after :each do
+      # %x[ rm -rf #{RAILS_ROOT}/public/sitemaps ]
       %x[ rm -f #{RAILS_ROOT}/public/* ]
     end
 
@@ -73,6 +77,22 @@ describe Mapmaker, "generating sitemaps from example config" do
       @task.invoke
       
       File.exists?("#{RAILS_ROOT}/public/sitemap.xml").should == true
+    end
+    
+    it "should store the other sitemaps in /public/sitemaps" do
+      @task.invoke
+      
+      File.exists?("#{RAILS_ROOT}/public/sitemaps/ninjas.xml").should == true
+      
+      File.exists?("#{RAILS_ROOT}/public/sitemaps/from_controller.xml").should == true
+    end
+    
+    it "should create files with the correct contents" do
+      @task.invoke
+      
+      File.open "#{RAILS_ROOT}/public/sitemaps/from_controller.xml", "r" do |f|
+        f.read.should == Mapmaker::Generator.create_sitemap(:main, :from_controller)
+      end
     end
   end
 end
