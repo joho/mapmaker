@@ -2,6 +2,7 @@ require 'rubygems'
 require 'hpricot'
 require 'action_controller'
 require 'active_support'
+require 'rake'
 Dir.glob(File.dirname(__FILE__) + '/../lib/*.rb').each {|rb| require rb}
 require File.dirname(__FILE__) + '/../example/controllers'
 
@@ -44,6 +45,20 @@ describe Mapmaker, "generating sitemaps from example config" do
     it "should generate an index with all the urls in it" do
       index = Mapmaker::Generator.create_sitemap_index
       check_all_urls_exist(index, %(donatello leonardo raphael michaelangelo))
+    end
+  end
+  
+  describe 'rake task' do
+    before :all do
+      task :environment do
+        # this is a dummy task that doesn't do anything
+      end
+  
+      load('lib/tasks/mapmaker.rake')
+    end
+
+    it "should exist" do
+      Rake::Task['generate_sitemaps'].should_not == nil
     end
   end
 end
