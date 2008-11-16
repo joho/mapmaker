@@ -55,10 +55,24 @@ describe Mapmaker, "generating sitemaps from example config" do
       end
   
       load('lib/tasks/mapmaker.rake')
+      
+      @task = Rake::Task['generate_sitemaps']
+    end
+    
+    before :each do
+      %x[ rm -f #{RAILS_ROOT}/public/* ]
     end
 
     it "should exist" do
-      Rake::Task['generate_sitemaps'].should_not == nil
+      @task.should_not == nil
+    end
+    
+    it "should store the index at public/sitemap.xml" do
+      File.exists?("#{RAILS_ROOT}/public/sitemap.xml").should == false
+      
+      @task.invoke
+      
+      File.exists?("#{RAILS_ROOT}/public/sitemap.xml").should == true
     end
   end
 end
